@@ -1,0 +1,168 @@
+
+name: Deploy Github Runner
+
+on:
+  workflow_dispatch:
+    inputs:
+      env:
+        type: choice
+        required: true
+        description: target environment
+        options:
+            - dev
+            - int
+            - qa
+      runner_download_bearer_token:
+        type: string
+        required: true
+        description: bearer token string from Schneider electric runner deployment instructions page
+
+jobs:
+  deploy-ghr:
+    name: Deploy Virtual Machine
+    environment:
+      name: dev
+    runs-on:
+      - self-hosted
+      - general
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Load Config JSON
+        id: load-config
+        run: |
+          config=$(cat ./deployment/configuration/dev.json)
+          #removing these chars enables github framework to access with fromJson()
+          config="${config//'%'/'%25'}"
+          config="${config//$'\n'/'%0A'}"
+          config="${config//$'\r'/'%0D'}"
+          echo "::set-output name=packageJson::$config"
+     
+      - name: Checkout the "Generate Runner Vm Script" repo
+        uses: actions/checkout@v3
+        with:
+          repository: DataServices/etp-action-generate-runner-vm-script
+          ref: feature/point-to-GHE-and-GH
+          token: ${{ secrets.ETPX_AUTOMATION_TOKEN }}
+          path: etp-actions/etp-action-generate-runner-vm-script
+     
+      - name: Define Variables
+        id: variables
+        env:
+          env: ${{ github.event.inputs.env }}
+          config: ${{ steps.load-config.outputs.packageJson }}
+        run: |
+          runnerAdminUsername=$( echo $config | jq ".ghrConfig" | jq ".adminUserName" )
+          echo runnerAdminUsername
+          echo ${{ inputs.runner_download_script }}
+          echo "::set-output name=runnerAdminUsername::$runnerAdminUsername"
+          echo "::set-output name=runnerVmLabels::self-hosted,etpx-portal,$env,use2"
+     
+      - name: Azure Login
+        uses: azure/login@24848bc889cfc0a8313c2b3e378ac0d625b9bc16
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+     
+      - name: Set Azure Subscription
+        env:
+          subscriptionId: ${{fromJson(steps.load-config.outputs.packageJson).subscriptionId}}
+        run: |
+          az account set --subscription $subscriptionId
+     
+      - name: Generate Temporary Password for Runner
+        id: vmPass
+        run: |
+          vm_temp_password=$(openssl rand -base64 32)
+          echo "::add-mask::$vm_temp_password"
+          echo "::set-output name=password::$vm_temp_password"
+     
+      - name: Update virtualMachineProperties password
+        id: ghr-config
+        env:
+          config: ${{ steps.load-config.outputs.packageJson }}
+          vmPass: "${{ steps.vmPass.outputs.password }}"
+          devSubscriptionId: ${{fromJson(steps.load-config.outputs.packageJson).devSubscriptionId}}
+        run: |
+          ghrConfig=$( echo $config | jq -c ".ghrConfig" )
+          newProperties=$(
+            echo $ghrConfig | jq -c ".adminUserPassword = \"$vmPass\"" |
+            jq -c ".imageProperties.subscriptionId = \"$devSubscriptionId\"" #needs to point to dev when env gets higher
+           )
+          echo "::set-output name=value::$newProperties"
+     
+      - name: Generate Github Runner Creation Script
+        id: generate-runner-vm-script
+        uses: ./etp-actions/etp-action-generate-runner-vm-script
+        with:
+          username: ${{ steps.variables.outputs.runnerAdminUsername }}
+          labels:  ${{ steps.variables.outputs.runnerVmLabels }}
+          group: ETPX_PORTAL
+          githubToken: ${{ secrets.SCRIPT_TOKEN }}
+          githubTokenPublic: ${{ secrets.ETP_PAT_TOKEN }}
+          githubDownloadBearerToken: ${{ inputs.runner_download_bearer_token }}
+
+      - name: Generate Params File
+        id: deploy-params
+        env:
+          workflow: ${{ github.workflow }}
+          env: ${{ github.event.inputs.env }}
+          config: ${{ steps.load-config.outputs.packageJson }}
+          location: ${{fromJson(steps.load-config.outputs.packageJson).region}}
+          rgName: ${{fromJson(steps.load-config.outputs.packageJson).resourceGroupName}}
+          schema: https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#
+          vmName: ${{ fromJson(steps.load-config.outputs.packageJson).vmName }}
+          virtualMachineProperties: ${{ steps.ghr-config.outputs.value }}
+          vnetRgName: ${{ fromJson(steps.load-config.outputs.packageJson).vnetRgName }}
+          vnetName: ${{ fromJson(steps.load-config.outputs.packageJson).vnetName }}
+          configurationScript: ${{ steps.generate-runner-vm-script.outputs.runnerVmScript }}
+        run: |
+          ghrVnetProps=$( echo $config | jq ".ghrVnetProps")
+          params="{
+                    \"\$schema\": \"$schema\",
+                    \"contentVersion\": \"1.0.0.0\",
+                    \"parameters\": {
+                      \"workflow\": {
+                        \"value\": \"$workflow\"
+                      },
+                      \"tags\": {
+                        \"value\": {\"env\": \"$env\"}
+                      },
+                      \"location\": {
+                        \"value\": \"$location\"
+                      },
+                      \"virtualMachineProperties\": {
+                        \"value\": $virtualMachineProperties
+                      },
+                      \"virtualNetworkProperties\": {
+                        \"value\": $ghrVnetProps
+                      },
+                      \"configurationScript\": {
+                        \"value\": \"$configurationScript\"
+                      },
+                      \"virtualMachineName\": {
+                        \"value\": \"$vmName\"
+                      },
+                      \"resourceGroupName\": {
+                        \"value\": \"$rgName\"
+                      },
+                      \"virtualNetworkResourceGroup\": {
+                        \"value\": \"$vnetRgName\"
+                      },
+                      \"virtualNetworkName\": {
+                        \"value\": \"$vnetName\"
+                      }
+                    }
+                  }"
+          echo $params > ./params.json
+          echo PARAMS For Deployment
+          cat ./params.json
+
+      - name: DeployVM
+        env:
+          location: ${{fromJson(steps.load-config.outputs.packageJson).region}}
+        run: |
+          az deployment sub create \
+          --name DeployPortalRunner \
+          --location $location \
+          --template-file ./deployment/templates/deploy_vm.bicep \
+          --parameters ./params.json
