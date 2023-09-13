@@ -1,6 +1,5 @@
 provider "azurerm" {
-  source = "hashicorp/azurerm"
-  version = "3.72.0"
+  version = "2.74.0"
   features {
     key_vault {
       purge_soft_delete_on_destroy    = true

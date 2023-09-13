@@ -189,9 +189,8 @@ resource "azurerm_key_vault" "key_vault" {
       "Recover",
       "Backup",
       "Restore",
-      "GetRotationPolicy",
-      "SetRotationPolicy",
-      "Rotate"
+       
+      
     ]
 
     secret_permissions = [
@@ -231,7 +230,7 @@ resource "azurerm_key_vault" "key_vault" {
       "Get"
     ]
   }
-
+ 
   access_policy {
     tenant_id = "6e51e1ad-c54b-4b39-b598-0ffe9ae68fef"
     object_id = "5611562d-d87f-4ebc-92f1-a761f128308f"
@@ -246,9 +245,9 @@ resource "azurerm_key_vault" "key_vault" {
       "Recover",
       "Backup",
       "Restore",
-      "GetRotationPolicy",
-      "SetRotationPolicy",
-      "Rotate"
+      
+      
+      
     ]
 
     secret_permissions = [
@@ -294,9 +293,9 @@ resource "azurerm_key_vault" "key_vault" {
      "Recover",
      "Backup",
      "Restore",
-     "GetRotationPolicy",
-     "SetRotationPolicy",
-     "Rotate"
+     
+     
+     
     ]
 
     secret_permissions = [
@@ -360,9 +359,9 @@ resource "azurerm_key_vault" "key_vault" {
      "Recover",
      "Backup",
      "Restore",
-     "GetRotationPolicy",
-     "SetRotationPolicy",
-     "Rotate"
+     
+     
+     
     ]
 
     secret_permissions = [
@@ -425,9 +424,9 @@ resource "azurerm_key_vault" "key_vault" {
      "Recover",
      "Backup",
      "Restore",
-     "GetRotationPolicy",
-     "SetRotationPolicy",
-     "Rotate"
+     
+     
+     
     ]
 
     secret_permissions = [
