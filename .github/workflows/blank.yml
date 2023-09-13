@@ -29,7 +29,7 @@ jobs:
      
     - name: Set Azure Subscription
       env:
-        subscriptionId: ${{fromJson(steps.load-config.outputs.packageJson).subscriptionId}}
+        subscriptionId: "cb3e902d-604f-41a5-9297-c0f6a596a9f7"
       run: |
           az account set --subscription $subscriptionId
           
