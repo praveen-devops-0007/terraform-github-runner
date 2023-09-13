@@ -156,7 +156,6 @@ resource "azurerm_role_assignment" "storage_contributor" {
 #keyvault
 resource "azurerm_key_vault" "key_vault" {
   name                        = "etpx-portal-prod-kv-use2"
-  vault_uri                   = 
   location                    = azurerm_resource_group.this.location
   resource_group_name         = azurerm_resource_group.this.name
   enabled_for_disk_encryption = false
