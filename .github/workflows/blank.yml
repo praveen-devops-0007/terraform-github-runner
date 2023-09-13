@@ -42,5 +42,5 @@ jobs:
     - name: Terraform Plan
       run: terraform plan -var-file="${{ github.event.inputs.env }}.tfvars"
 
-    - name: Terraform Apply
-      run: terraform apply -var-file="${{ github.event.inputs.env }}.tfvars" -auto-approve
+    # - name: Terraform Apply
+    #   run: terraform apply -var-file="${{ github.event.inputs.env }}.tfvars" -auto-approve
