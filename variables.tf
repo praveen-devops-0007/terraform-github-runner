@@ -3,9 +3,9 @@ variable "location" {
   description = <<-EOF
     (Optional) The Azure location to create the resources
 
-    [Default: australiaeast]
+    [Default: eastus2]
   EOF
-  default     = "australiaeast"
+  default     = "eastus2"
 }
 
 variable "environment" {

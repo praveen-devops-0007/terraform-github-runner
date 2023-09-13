@@ -6,4 +6,4 @@ To have diffrent variables we can have files
 
 and run command like
 
-terraform apply -var-file=staging.tfvars --auto-approve
+terraform apply --var-file=staging.tfvars --auto-approve
