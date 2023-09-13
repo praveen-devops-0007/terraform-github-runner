@@ -152,3 +152,347 @@ resource "azurerm_role_assignment" "storage_contributor" {
   role_definition_name = "Storage Account Contributor"
   scope          = azurerm_storage_account.this.id
 }
+
+#keyvault
+resource "azurerm_key_vault" "key_vault" {
+  name                        = "etpx-portal-prod-kv-use2"
+  vault_uri                   = 
+  location                    = azurerm_resource_group.this.location
+  resource_group_name         = azurerm_resource_group.this.name
+  enabled_for_disk_encryption = false
+  tenant_id                   = "6e51e1ad-c54b-4b39-b598-0ffe9ae68fef"
+  soft_delete_retention_days  = 90
+  enabledForDeployment        = false
+  enabledForTemplateDeployment = false
+  enableSoftDelete            = true
+  enableRbacAuthorization     = false
+  tags                        = {
+    "SEALZ-BusinessUnit": "Schneider Digital",
+    "SEALZ-CostCenter": "1000-US012639",
+    "SEALZ-DataClassification": "SE-Restricted"
+  }
+  sku_name = "standard"
+  network_acls = {
+    bypass = "AzureServices",
+    defaultAction = "Deny"
+  }
+  access_policy {
+    tenant_id = "6e51e1ad-c54b-4b39-b598-0ffe9ae68fef"
+    object_id = "2d2f8b82-8232-4fc7-a503-e56f1b6bc2a5"
+
+    key_permissions = [
+      "Get",
+      "List",
+      "Update",
+      "Create",
+      "Import",
+      "Delete",
+      "Recover",
+      "Backup",
+      "Restore",
+      "GetRotationPolicy",
+      "SetRotationPolicy",
+      "Rotate"
+    ]
+
+    secret_permissions = [
+      "Get",
+      "List",
+      "Set",
+      "Delete",
+      "Recover",
+      "Backup",
+      "Restore"
+    ]
+
+    certificate_permissions = [
+      "Get",
+      "List",
+      "Update",
+      "Create",
+      "Import",
+      "Delete",
+      "Recover",
+      "Backup",
+      "Restore",
+      "ManageContacts",
+      "ManageIssuers",
+      "GetIssuers",
+      "ListIssuers",
+      "SetIssuers",
+      "DeleteIssuers"
+    ]
+  }
+
+  access_policy {
+    tenant_id = "6e51e1ad-c54b-4b39-b598-0ffe9ae68fef"
+    object_id = "3b74c9b2-9cb1-4f65-b9ec-17cba3e3fb7e"
+
+    certificate_permissions = [
+      "Get"
+    ]
+  }
+
+  access_policy {
+    tenant_id = "6e51e1ad-c54b-4b39-b598-0ffe9ae68fef"
+    object_id = "5611562d-d87f-4ebc-92f1-a761f128308f"
+
+    key_permissions = [
+      "Get",
+      "List",
+      "Update",
+      "Create",
+      "Import",
+      "Delete",
+      "Recover",
+      "Backup",
+      "Restore",
+      "GetRotationPolicy",
+      "SetRotationPolicy",
+      "Rotate"
+    ]
+
+    secret_permissions = [
+      "Get",
+      "List",
+      "Set",
+      "Delete",
+      "Recover",
+      "Backup",
+      "Restore"
+    ]
+
+    certificate_permissions = [
+      "Get",
+      "List",
+      "Update",
+      "Create",
+      "Import",
+      "Delete",
+      "Recover",
+      "Backup",
+      "Restore",
+      "ManageContacts",
+      "ManageIssuers",
+      "GetIssuers",
+      "ListIssuers",
+      "SetIssuers",
+      "DeleteIssuers"
+    ]
+  }
+
+  access_policy {
+    tenant_id = "6e51e1ad-c54b-4b39-b598-0ffe9ae68fef"
+    object_id = "5510d643-1b18-4475-9ad8-a80296ad275c"
+
+    key_permissions = [
+     "Get",
+     "List",
+     "Update",
+     "Create",
+     "Import",
+     "Delete",
+     "Recover",
+     "Backup",
+     "Restore",
+     "GetRotationPolicy",
+     "SetRotationPolicy",
+     "Rotate"
+    ]
+
+    secret_permissions = [
+      "Get",
+      "List",
+      "Set",
+      "Delete",
+      "Recover",
+      "Backup",
+      "Restore"
+    ]
+
+    certificate_permissions = [
+      
+      "Get",
+      "List",
+      "Update",
+      "Create",
+      "Import",
+      "Delete",
+      "Recover",
+      "Backup",
+      "Restore",
+      "ManageContacts",
+      "ManageIssuers",
+      "GetIssuers",
+      "ListIssuers",
+      "SetIssuers",
+      "DeleteIssuers"
+    ]
+  }
+
+  access_policy {
+    tenant_id = "6e51e1ad-c54b-4b39-b598-0ffe9ae68fef"
+    object_id = "2645de3f-7470-4da3-a50d-680d60e4ab92"
+
+    secret_permissions = [
+      
+      "Get",
+      "List",
+      "Set",
+      "Delete",
+      "Recover",
+      "Backup",
+      "Restore"
+    ]
+
+  }
+
+  access_policy {
+    tenant_id = "6e51e1ad-c54b-4b39-b598-0ffe9ae68fef"
+    object_id = "114423ad-adf5-4b8e-91c5-4faf88c0a0fb"
+
+    key_permissions = [
+     "Get",
+     "List",
+     "Update",
+     "Create",
+     "Import",
+     "Delete",
+     "Recover",
+     "Backup",
+     "Restore",
+     "GetRotationPolicy",
+     "SetRotationPolicy",
+     "Rotate"
+    ]
+
+    secret_permissions = [
+      "Get",
+      "List",
+      "Set",
+      "Delete",
+      "Recover",
+      "Backup",
+      "Restore"
+    ]
+
+    certificate_permissions = [
+      "Get",
+      "List",
+      "Update",
+      "Create",
+      "Import",
+      "Delete",
+      "Recover",
+      "Backup",
+      "Restore",
+      "ManageContacts",
+      "ManageIssuers",
+      "GetIssuers",
+      "ListIssuers",
+      "SetIssuers",
+      "DeleteIssuers"
+    ]
+
+  }
+
+  access_policy {
+    tenant_id = "6e51e1ad-c54b-4b39-b598-0ffe9ae68fef"
+    object_id = "748c5253-f681-4323-87db-cb93461dd406"
+
+    secret_permissions = [
+      "Get",
+      "List",
+      "Set",
+      "Delete",
+      "Recover",
+      "Backup",
+      "Restore"
+    ]
+
+  }
+
+  access_policy {
+    tenant_id = "6e51e1ad-c54b-4b39-b598-0ffe9ae68fef"
+    object_id = "548c094b-c638-45d5-ae9c-70636b546e0f"
+
+    key_permissions = [
+     "Get",
+     "List",
+     "Update",
+     "Create",
+     "Import",
+     "Delete",
+     "Recover",
+     "Backup",
+     "Restore",
+     "GetRotationPolicy",
+     "SetRotationPolicy",
+     "Rotate"
+    ]
+
+    secret_permissions = [
+      "Get",
+      "List",
+      "Set",
+      "Delete",
+      "Recover",
+      "Backup",
+      "Restore"
+    ]
+
+    certificate_permissions = [
+      "Get",
+      "List",
+      "Update",
+      "Create",
+      "Import",
+      "Delete",
+      "Recover",
+      "Backup",
+      "Restore",
+      "ManageContacts",
+      "ManageIssuers",
+      "GetIssuers",
+      "ListIssuers",
+      "SetIssuers",
+      "DeleteIssuers"
+    ]
+
+  }
+
+  access_policy {
+    tenant_id = "6e51e1ad-c54b-4b39-b598-0ffe9ae68fef"
+    object_id = "d4064fe8-753b-44c7-b521-71c4cd15c0f7"
+
+    secret_permissions = [
+      "Get",
+      "List",
+      "Set",
+      "Delete",
+      "Recover",
+      "Backup",
+      "Restore"
+    ]
+
+  }
+
+  access_policy {
+    tenant_id = "6e51e1ad-c54b-4b39-b598-0ffe9ae68fef"
+    object_id = "7bd2bc3a-0444-41d2-a9be-bec5994d3abd"
+
+    secret_permissions = [
+      "Get",
+      "List",
+      "Set",
+      "Delete",
+      "Recover",
+      "Backup",
+      "Restore"
+    ]
+
+  }
+}
+
+        
+
