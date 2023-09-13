@@ -10,3 +10,12 @@ provider "azurerm" {
     tenant_id             = "b4dc3026-2bc8-4d24-aa73-8d9e35e549d4"
     subscription_id       = "cb3e902d-604f-41a5-9297-c0f6a596a9f7"
 }
+
+terraform {
+  required_providers {
+    azurerm = {
+      source = "hashicorp/azurerm"
+      version = "3.72.0"
+    }
+  }
+}
