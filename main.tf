@@ -67,8 +67,6 @@ resource "random_integer" "ri" {
   max = 9999
 }
 
-
-
 resource "azurerm_storage_account" "this" {
   name                     = format("sa%s", replace(local.suffix, "-", ""))
   resource_group_name      = azurerm_resource_group.this.name
@@ -125,7 +123,7 @@ resource "azurerm_linux_virtual_machine" "runners" {
 
   os_disk {
     caching              = "None"
-    storage_account_type = "Standard_LRS"
+    storage_account_type = "Premium_LRS"
     name = "etpx-portal-prod-ghr-use2"
   }
 
